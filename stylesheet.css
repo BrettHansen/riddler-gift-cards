@@ -1,0 +1,34 @@
+body {
+  font-family: Georgia, serif;
+}
+
+a:link, a:visited {
+  color: #007dbc;
+  text-decoration: none;
+}
+
+a:hover, a:active {
+  text-decoration: underline;
+}
+
+p {
+  width: 750px;
+  margin: 0 auto 20px auto;
+}
+
+p.quote {
+  width: 650px;
+  font-style: italic;
+  margin: 0 auto 20px auto;
+}
+
+p.pull-left {
+  width: 700px;
+}
+
+ul {
+  list-style-type: circle;
+  width: 725px;
+  margin: 0 auto 10px auto;
+  padding-left: 25px;
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gift Cards Problem</title>
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+</head>
+<body>
+  <h2 align="center">Does Your Gift Card Still Have Free Drinks On It?</h2>
+  <p class="quote">
+    Lucky you! You've won two gift cards, each loaded with 50 free drinks from your favorite coffee shop, Riddler Caffei-Nation. The cards look identical, and because you're not one for record-keeping, you randomly pick one of the cards to pay with each time you get a drink. One day, the clerk tells you that he can't accept the card you presented to him because it doesn't have any drink credits left on it.
+  </p>
+  <p class="quote">
+    What is the probability that the other card still has free drinks on it? How many free drinks can you expect are still available?
+  </p>
+  <p>
+    This problem was posed <a href="https://fivethirtyeight.com/features/does-your-gift-card-still-have-free-drinks-on-it/">as part of FiveThirtyEight's weekly column, The Riddler</a>. What follows is my own solution.
+  </p>
+  <p>
+    Let's start with some notation. We can describe the state of your giftcards with the pair \(S_k=(a_k,b_k)\) respresenting the number of credits left on each card in iteration \(k\) (the \(k\)-th iteration is where you buy your \(k\)-th cup of coffee). Initially, the state of the system is \(S_0=(50,50)\).
+  </p>
+  <p>
+    In each iteration, you randomly choose a card and attempt to purchase a drink with it &mdash; this corresponds to decrementing one of the two elements of the pair. For example, in the first iteration you may choose the left card of the pair, resulting in \(S_1=(49,50)\). Finally, let \(T_k\) be the total credits left on both cards so that \(T_k=a_k+b_k\).
+  </p>
+  <p>
+    The questions ask about the <em>final</em> states of our system &mdash; those in which you attempted to use an empty gift card. Let us describe the final state of the system with the un-paramaterized variables \(S\) and \(T\). It follows that there are two types of final states:
+    <ul>
+      <li>
+        A single state where <em>both</em> cards are empty, resulting in \(S=(0,0)\) and \(T=0\), and,
+      </li>
+      <li>
+        The many states where one card still has some non-zero number of credits (e.g \(S=(1,0)\), \(T=1\)).
+      </li>
+    </ul>
+  </p>
+  <p>
+    Non-final states always lead to two possible next states with equal probability. For example, from the state \(S_{22}=(40,28)\) you could either use a credit from the left card resulting in \(S_{23}=(39,28)\), or from the right card giving \(S_{23}=(40,27)\). Notice however, that you could have also arrived at \(S_{23}=(40,27)\) from the state \(S_{22}=(41,28)\).
+  </p>
+  <p>
+    This naturally lends itself to a tree structure. Let's consider a smaller problem to make the notation simpler &mdash; suppose each card starts with 3 credits. We can construct a tree where each level represents an iteration of a problem, listing all the possible states in that iteration. We can simulate this problem by walking downward through the tree, with each step corresponding to choosing a card and purchasing a drink with it.
+  </p>
+    \begin{align}
+&&&&&&&&&&               &&              &&              &&     &&(3,3)         &&     &&              &&              &&               \\
+&&&&&&&&&&               &&              &&              &&(3,2)&&              &&(2,3)&&              &&              &&               \\
+&&&&&&&&&&               &&              &&(3,1)         &&     &&(2,2)         &&     &&(1,3)         &&              &&               \\
+&&&&&&&&&&               &&(3,0)         &&              &&(2,1)&&              &&(1,2)&&              &&(0,3)         &&               \\
+&&&&&&&&&& \mathbf{(3,0)}&&              &&(2,0)         &&     &&(1,1)         &&     &&(0,2)         &&              &&\mathbf{(0,3)} \\
+&&&&&&&&&&               &&\mathbf{(2,0)}&&              &&(1,0)&&              &&(0,1)&&              &&\mathbf{(0,2)}&&               \\
+&&&&&&&&&&               &&              &&\mathbf{(1,0)}&&     &&\mathbf{(0,0)}&&     &&\mathbf{(0,1)}&&              &&               \\
+    \end{align}
+  <p>
+    In this diagram, the initial state \(S_0=(3,3)\) is at the top and the final states are bold. We can extend the diagram slightly so that all the final states occur in the final row. I will italicize states that are not actually valid, but lead to an appropriate final state in the final row.
+  </p>
+    \begin{align}
+&&&&&&&&&& &&              &&              &&              &&              &&              &&     &&(3,3)         &&     &&              &&              &&              &&              &&               \\
+&&&&&&&&&& &&              &&              &&              &&              &&              &&(3,2)&&              &&(2,3)&&              &&              &&              &&              &&               \\
+&&&&&&&&&& &&              &&              &&              &&              &&(3,1)         &&     &&(2,2)         &&     &&(1,3)         &&              &&              &&              &&               \\
+&&&&&&&&&& &&              &&              &&              &&(3,0)         &&              &&(2,1)&&              &&(1,2)&&              &&(0,3)         &&              &&              &&               \\
+&&&&&&&&&& &&              &&              &&\mathit{(3,0)}&&              &&(2,0)         &&     &&(1,1)         &&     &&(0,2)         &&              &&\mathit{(0,3)}&&              &&               \\
+&&&&&&&&&& &&              &&\mathit{(3,0)}&&              &&\mathit{(2,0)}&&              &&(1,0)&&              &&(0,1)&&              &&\mathit{(0,2)}&&              &&\mathit{(0,3)}&&               \\
+&&&&&&&&&& &&\mathbf{(3,0)}&&              &&\mathbf{(2,0)}&&              &&\mathbf{(1,0)}&&     &&\mathbf{(0,0)}&&     &&\mathbf{(0,1)}&&              &&\mathbf{(0,2)}&&              &&\mathbf{(0,3)} \\
+    \end{align}
+  <p>
+    Lots more explanation and diagrams...
+  </p>
+  <p>
+    The probability the other card still has free drinks on it is given by \(\mathbb{P}(T>0)\), while the expected number of drinks remaining is simply \(\mathbb{E}[T]\).
+  </p>
+\begin{align}
+
+\mathbb{P}(T>0)&=\binom{2n}{n}2^{-2n} \\
+\mathbb{E}[T]&=\sum_{k=0}^{n-1}\binom{n+k}{k}(n-k)2^{-(n+k)} \\
+
+\end{align}
+  <p>
+    With \(n=50\), we therefore have:
+  </p>
+\begin{align}
+
+\mathbb{P}(T>0) &=\binom{100}{50}2^{-100} = \frac{100\ 891\ 344\ 545\ 564\ 193\ 334\ 812\ 497\ 256}{1\ 267\ 650\ 600\ 228\ 229\ 401\ 496\ 703\ 205\ 376} &\approx 0.0796 \\
+\mathbb{E}[T]   &=\sum_{k=0}^{49}\binom{50+k}{k}(50-k)2^{-(50+k)} &\approx 7.0385 \\
+
+\end{align}
+</body>
+</html>
